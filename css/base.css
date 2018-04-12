@@ -1,0 +1,119 @@
+@charset "UTF-8";
+/*css 初始化 */
+html, body, ul, li, ol, dl, dd, dt, p, h1, h2, h3, h4, h5, h6, form, fieldset, legend, img, menu{ margin:0; padding:0; }
+fieldset, img,input,button { border:none; padding:0;margin:0;outline-style:none; }/*去掉蓝色外边框*/
+ul, ol { list-style:none; }/*去掉小圆点*/
+input { padding-top:0; padding-bottom:0; font-family: "SimSun","宋体";}
+select, input { vertical-align:middle;}/*统一各浏览器文本框输入时，光标位置*/
+select, input, textarea { font-size:12px; margin:0; }
+textarea { resize:none; } /*防止拖动*/
+img {border:0;	vertical-align:middle; }  /*  去掉图片低测默认的3像素空白缝隙*/
+table { border-collapse:collapse; }/*处理表格边框空隙*/
+/*定义统一背景色调*/
+body {
+    font:12px/150% Arial,Verdana,"\5b8b\4f53";/*具有继承属性，使得子元素得到应用*/
+    font-family: "微软雅黑","宋体","Helvetica Neue",Helvetica,Arial,"Microsoft Yahei UI","Microsoft YaHei",SimHei,simsun,sans-serif;/*参考字体*/
+    color:#666;
+    background:#fff
+}
+/*伪元素*/
+.fake:after , .fake:before {
+    display : block;
+    content : "";
+    position: absolute;
+}
+/*清理浮动*/
+.clearfix:before,.clearfix:after {
+    content:"";
+    display:table;
+}
+.clearfix:after{clear:both;}
+.clearfix{
+    *zoom:1;/*IE/7/6*/
+}
+/*处理a标签的下划线*/
+a {color:#666; text-decoration:none; }
+/*a:hover{color:#C81623;}*/
+a:active{ color:#009ee0;}
+
+h1,h2,h3,h4,h5,h6 {text-decoration:none;font-weight:normal;font-size:100%;}
+s,i,em{font-style:normal;text-decoration:none;}
+.col-red{color: #C81623!important;}
+
+/*公共类*/
+.w {  /*版心 提取 固定布局核心，单独定义便于版本更改*/
+    width: 1210px;margin:0 auto;
+}
+.fl {
+    float:left
+}
+.fr {
+    float:right
+}
+.al {
+    text-align:left
+}
+.ac {
+    text-align:center
+}
+.ar {
+    text-align:right
+}
+.hide {
+    display:none
+}
+/*
+禁止文本换行
+*/
+.noWrap{
+    word-break:keep-all;
+    white-space:nowrap;          /* 不换行 */
+    overflow:hidden;               /* 内容超出宽度时隐藏超出部分的内容 */
+    text-overflow:ellipsis;
+}
+/*兼容行内块*/
+.in-block{
+    display:inline-block;
+    *display:inline;
+    *zoom:1;/*针对ie7不识别inline-block的hack写法，注意zoom不能少*/
+    /*
+    增加:*display: inline;是为了让块元素排成一行，*zoom:1的作用是触发hasLayout，能够支持设置宽、高、line-height等一系列属性。
+    */
+    letter-spacing: normal;
+    word-spacing: normal;
+    font-size:12px;/*恢复默认字体大小*/
+}
+/*
+删除行内块空白
+*/
+.del-gap{
+    /*兼容IE8+ chrome firefox opera*/
+    font-size:0;
+    /*safari 去除空白间歇*/
+  /*  letter-spacing: -4px;!*根据不同字体字号或许需要做一定的调整*!
+    word-spacing: -4px;*/
+    letter-spacing: -0.31em; /* webkit */
+    *letter-spacing: normal; /* IE < 8 重置 */
+    word-spacing: -0.43em; /* IE < 8 && gecko */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

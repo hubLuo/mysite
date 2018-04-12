@@ -1,0 +1,335 @@
+/*
+小视图和移动端情况设置--------------------------------
+*/
+#bookListMin,#ballMin{
+    width:100%;height:30px;
+    position:absolute;
+    top:0px;left:0px;
+    overflow: hidden;
+    background: linear-gradient(rgba(234,226,213,0.2),rgba(255,255,255,0.05));
+    /*display:none;*/
+    visibility:hidden;
+/*    perspective:800px;
+    perspective-origin: center center;
+    transform-origin: center top ;
+    transform:perspective(800px) rotateX(-70deg);
+    transition:0.5s ease-out;*/
+}
+#bookListMin.minMovie,#ballMin.minMovie{
+    animation:none;
+    opacity:1;
+}
+#bookListMin.minOff,#ballMin.minOff{
+    animation:none;
+    opacity:0;
+}
+@keyframes minMovie{
+    0%{opacity:0}
+    100%{opacity:1}
+}
+@keyframes minOff{
+    0%{opacity:1}
+    100%{opacity:0}
+}
+#bookListMin ul,#ballMin ul{
+    height:30px;
+    width:560px;
+    position:absolute;
+    top:0;left:0;
+}
+#bookListMin li,#ballMin li{
+    height:30px;
+    text-align: center;
+    font-size: 12px;
+    cursor:pointer;
+}
+#bookListMin li a,#ballMin li a{
+    line-height: 30px;
+    color:#fff;
+}
+#bookListMin li{
+    float:left;
+    width:80px;
+}
+#ballMin{
+    background: linear-gradient(rgba(50,50,50,0.1),rgba(0,0,0,0.05));
+}
+#ballMin ul{
+    width:auto;
+}
+#ballMin li{
+    display:inline-block;
+    padding:0 5px;
+    width:auto;
+}
+/*--------------------------------小视图和移动端情况设置结束*/
+/*
+loading----------------------------------
+*/
+#loading,#noSupport,#loadingBg,#windowInfo,#windowBg{
+    width:100%;height:100%;position:absolute;top:0;left:0;z-index: 100000;
+}
+#loadingBg{z-index: 1; background:#000;clip-path: circle(100% at 50% 50%); }
+#loadingBg.off{animation:hiddenBg  ease-out 0.5s;clip-path: circle(0% at 50% 50%);opacity:0.4;}
+#loadingBg.hidden{display:none;}
+
+#loadingPart1,#loadingPart2,#loadingPart3{
+    width:80px;height:80px;position:absolute;top:calc(50% - 40px);right:calc(50% - 40px);z-index:2;
+}
+#loadingPart1.small,#loadingPart2.small{
+    transform:scale(0.5);top:0px;right:0;
+}
+#loadingPart2{transform:rotate(45deg)}
+#loadingPart2.small{
+    transform:scale(0.5) rotate(45deg);
+}
+#loadingPart1 i,#loadingPart2 i,#loadingPart3 i{
+    display:block;width:20px;height:20px;position:absolute;border-radius:50%;animation:loadingMovie linear infinite 1.2s;
+    background:#fff;
+}
+#loadingPart1 i.off,#loadingPart2 i.off{
+    animation:none;
+}
+#loadingPart1 i.in,#loadingPart2 i.in{
+    opacity:0.5;background:#000;
+}
+#loadingPart3 i{
+    width:50px;height:50px;border-radius:0;background:none;top:calc(50% - 25px);left:calc(50% - 25px);animation:none;
+}
+#loadingPart3 p{
+    width:50px;height:25px;line-height:25px;text-align:center;font-size:16px;color:#fff;
+}
+#loadingPart3 .progress{
+    height:20px;line-height:20px;
+}
+#loadingPart3 .loadingText{
+    height:30px;line-height:14px;font-size:12px;
+}
+#loadingPart1 .circle1,#loadingPart2 .circle1{left:0;top:0}
+#loadingPart1 .circle2,#loadingPart2 .circle2{right:0;top:0}
+#loadingPart1 .circle3,#loadingPart2 .circle3{right:0;bottom:0}
+#loadingPart1 .circle4,#loadingPart2 .circle4{left:0;bottom:0}
+@keyframes hiddenBg{
+    0%{clip-path: circle(100% at 50% 50%);opacity:1;}
+    100%{clip-path: circle(0% at 50% 50%);opacity:0.4;}
+}
+@keyframes loadingMovie{
+    0%{transform:scale(1)}
+    50%{transform:scale(0)}
+    100%{transform:scale(1)}
+}
+#loadingPart1 .circle1{animation-delay:-.8s}
+#loadingPart2 .circle1{animation-delay:-.7s}
+#loadingPart1 .circle2{animation-delay:-.6s}
+#loadingPart2 .circle2{animation-delay:-.5s}
+#loadingPart1 .circle3{animation-delay:-.4s}
+#loadingPart2 .circle3{animation-delay:-.3s}
+#loadingPart1 .circle4{animation-delay:-.2s}
+#loadingPart2 .circle4{animation-delay:-.1s}
+/*----------------------------------loading end*/
+/*
+windowInfo----------------------------------
+*/
+#windowInfo.off{
+    display:none
+}
+#windowInfo.on{
+    display:block;
+}
+
+#windowInfo .winCon{
+/*    position:absolute;*/
+}
+#windowBg{
+    background:#000;opacity:.3; display:none;
+}
+#winQRCode{
+    width:300px;height:0px;background:red;top:0;left:0;position:absolute;
+    background:url(www.svg) center / cover no-repeat;
+}
+#winQRCode.show{
+    animation: show ease-out 0.5s;
+    height:300px;width:300px;
+}
+@keyframes  show{
+    0%{height:0}
+    50%{height:200px}
+    60%{height:300px}
+    70%{height:310px}
+    80%{height:300px}
+    90%{height:310px}
+    100%{height:300px}
+}
+/*----------------------------------windowInfo end*/
+/*
+noSupport----------------------------------
+*/
+#noSupport{
+    z-index: 100001;  background:#fff;display:none;
+}
+#noSupport .supportInfo{
+    position:absolute;
+    height:300px;
+    width:320px;
+/*    border:1px solid #000000;*/
+}
+#noSupport .supportInfo ul{
+    width:100%;height:100%;
+}
+#noSupport .supportInfo li{
+    height:100%;position:absolute;
+}
+
+#noSupport .supportInfo li.supportIcon{
+    width:120px;height:120px;background: url(../images/index/html_page_warning.png) center  no-repeat;left:0;top:0;
+}
+#noSupport .supportInfo li.supportText{
+    width:200px;left:100px;height:150px;top:0;
+ /*   border:1px solid #000000;*/
+}
+#noSupport .supportInfo li.supportText p{
+    line-height:30px;text-align: center;font-size:20px;word-wrap:break-word; letter-spacing:0.6px;
+}
+/*----------------------------------noSupport end*/
+@media (max-width:900px){
+    /*loading*/
+    #loadingPart1.small,#loadingPart2.small{
+        transform:scale(0.3);top:-20px;right:-20px;
+    }
+    #loadingPart2{transform:rotate(45deg)}
+    #loadingPart2.small{
+        transform:scale(0.3) rotate(45deg);
+    }
+    /*头部*/
+    #head{height:40px;}
+/*    #icon{
+        display:none;
+    }*/
+    #icon{
+        width:25px;margin-top:10px;margin-right:7px;
+    }
+    #icon li:nth-of-type(1),#icon li:nth-of-type(2){ display:none;}
+    #nav{ margin-top:0px;height:40px;}
+    #nav li{
+        width:85px;
+    }
+    .arrow{
+        width:85px;
+        top:2px;
+        border-radius:12px;
+    }
+    /*内容样式基本设置*/
+    #wrapContent> ul {
+        top:40px;
+    }
+    #wrapContent .displayArea{
+        height:320px;
+    /*    max-height:320px;
+        min-height:280px;*/
+    }
+    /*自建库--------内容*/
+    #bookListMin,#ballMin{
+      /*  display:block;*/
+        visibility:visible;
+    }
+    #bookList{
+        display:none;
+    }
+    #wrapContent .star.starBg:nth-of-type(1){
+        display:none;
+    }
+    #description{
+        width:300px;
+        left:calc(50% - 150px);
+    }
+    #description .title{
+        height:15%;
+    }
+    #description .title h3{
+        line-height:45px;
+    }
+    #description .describe{
+        height:85%;
+    }
+    #bookList div.bookListShow,#bookList div.bookListOff{
+       animation:none;
+    }
+    #bookListMin.minMovie,#ballMin.minMovie{
+        animation:minMovie 0.5s ease-out;
+    }
+    #bookListMin.minOff,#ballMin.minOff{
+        animation:minOff 0.5s ease-out;
+    }
+    #wrapContent .star.starBg:nth-of-type(2){
+        left:5%;
+        top:5%;
+    }
+    #wrapContent .star.starBg:nth-of-type(3){
+        top:-5%;
+    }
+    /*自建库--------背景*/
+    #mountain{
+        height:80%;
+    }
+    #mountain i:nth-child(4){
+        display:none;
+    }
+    #mountain i:nth-child(5){
+        display:none;
+    }
+    #sea{
+        padding-top: 10px;
+        height:20%;
+    }
+    #sea img:nth-of-type(2){
+        margin-top:-20px;
+    }
+    #sea img:nth-of-type(3){
+        display:none;
+    }
+    #sea img:nth-of-type(4){
+        display:none;
+    }
+    /*能量球---------内容*/
+    #energyBall .displayArea{
+
+    }
+    #catalog .circleBase{
+        background: none;
+        border:none;
+    }
+    #catalog .circleOutLine,#catalog .circleSubline{
+        display:none;
+    }
+    #ballSvg{
+        display:none;
+    }
+    #catalog .circleBase.circleBaseMovie, #catalog .circleBase.circleBaseOff,
+    #catalog .circleSubline.sublineMovie,#catalog .circleSubline.sublineOff,
+    #catalog .circleOutLine.outlineMovie,#catalog .circleOutLine.outlineOff,
+    #ballSvg.ballSvgMovie,#ballSvg.ballSvgOff{
+        animation:none;
+    }
+
+    /*音乐台----------内容*/
+    #musicDisc {
+        width:320px;
+        height:100%;
+        max-height:320px;
+        min-height:280px;
+    }
+    #audioPlay .displayArea{
+        height:700px;
+    }
+}
+
+/*当页面大于 1200px 时，大屏幕，主要是 PC 端*/
+@media (min-width: 1200px) {  }
+/*在 992 和 1199 像素之间的屏幕里，中等屏幕，分辨率低的 PC*/
+@media (min-width: 992px) and (max-width: 1199px) {  }
+/*在 768 和 991 像素之间的屏幕里，小屏幕，主要是 PAD*/
+@media (min-width: 768px) and (max-width: 991px) {  }
+/*在 480 和 767 像素之间的屏幕里，超小屏幕，主要是手机*/
+@media (min-width: 480px) and (max-width: 767px) {  }
+/*在小于 480 像素的屏幕，微小屏幕，更低分辨率的手机*/
+@media (max-width: 479px) {  }

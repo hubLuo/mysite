@@ -1,0 +1,1661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no" inital-scale=1.0,minimum-scale=1.0,maximum-scale=1.0/>
+    <title>Title</title>
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/content.css">
+    <link rel="stylesheet" href="css/media.css">
+    <!--[if lt IE 9]>
+    <script src="js/html5.js"></script><![endif]-->
+    <script src="js/$lq1.1.js"></script>
+    <script src="js/data.js"></script>
+    <style>
+
+    </style>
+    <script>
+        $lq(function(){
+
+            var head=$lq("#head"),$icon=$lq("#icon",head[0]),nav=$lq("#nav",head[0]),arrow =$lq(".arrow",nav[0]),navUl =$lq("ul",nav[0]),navLis=$lq("li",navUl[0]),navLisUp=$lq("i.up",navUl[0]),
+                    content=$lq("#content"),contentUl=$lq("#exhibition",content[0]),contentLis=$lq("li",content[0]),contentBg=$lq("#exhibitionBg",content[0]),contentBgLis=$lq("li",contentBg[0]),contentDisplay=$lq(".displayArea",content[0]),typeModel=$lq("#typeModel"),
+                    waveWrap=$lq("#waveWrap",contentBg[0]),musicBg=$lq("#musicBg",contentBg[0]),html=$lq.htmlElement;
+            //var winH=$lq.getClientWin().h,contentW=headW=winW=$lq.getClientWin().w,headH=$lq.getOffset(head[0]).clientH,contentH=winH-headH,widthRem=winW>=640?640:(winW<320?320:winW);
+            //html.style.fontSize = widthRem/16+"px";
+            //视图
+            var view=function(){
+                var win,header,content,rem,displayMin;
+                function init(){
+                    var winH=$lq.getClientWin().h,contentW=headW=winW=$lq.getClientWin().w,headH=$lq.getOffset(head[0]).clientH,contentH=winH-headH,widthRem=winW>=640?640:(winW<320?320:winW),fontRem=widthRem/16+"px";
+                    html.style.fontSize = fontRem;
+                    win={w:winW,h:winH},header={w:headW,h:headH},content={w:contentW,h:contentH},rem={font:fontRem,w:widthRem},displayMin={w:320,height:320};
+                };
+                init();
+                return{
+                    win:win,
+                    head:header,
+                    content:content,
+                    rem:rem,
+                    displayMin:displayMin,
+                    update:function(){
+                        init();
+                        this.win=win,this.head=header,this.content=content,this.rem=rem,this.displayMin=displayMin;
+                    }
+                }
+            }();
+            var detection=function(){
+                console.log(">>>>>>>>>",$lq.styleInfo);
+                var $noSupport=$lq("#noSupport"),$info=$lq("#noSupport .supportInfo",$noSupport[0]),$infoLis=$lq("li",$info[0]);
+                function setPosition(){
+                    view.update();
+                    var w=view.win.w,h=view.win.h,infoW=$info[0].offsetWidth,infoH=$info[0].offsetHeight;;
+                    //var infoIconW=$infoLis[0].offsetWidth,infoTextW=infoW-infoIconW;
+                    $info.setStyles({
+                        top:h/2-infoH/2,
+                        left:w/2-infoW/2
+                    });
+                };
+                function show(){
+                    $noSupport.setStyle("display","block");
+                }
+                function bundle(){
+                    $lq.on($lq,"resize",function(){
+                        setPosition();
+                    });
+                }
+                function init(){
+                    show();
+                    bundle();
+                }
+                return{
+                    support:$lq.styleInfo,
+                    init:init
+                }
+            }();
+            if(!detection.support.result){
+                detection.init();
+                return;
+            };
+            //请求路径
+            var url=function(){
+                var images="./images/";
+                var json="./json/";
+                var music=json+"music.json";
+                var ball=json+"ball.json"
+                var musicImg="images/music/"
+                return {
+                    images:images,
+                    json:json,
+                    music:music,
+                    ball:ball,
+                    musicImg:musicImg
+                };
+            }();
+            //loading
+            var loader=function(){
+                var loading=true,loadedIndex=false;
+                var images=["index/bg_star.jpg","library/mountainBg.png","library/mountainOne.png","library/mountainTwo.png","library/mountainThree.png","music/bg.jpg"];
+                var dataset=[url.music,url.ball],len=images.length+dataset.length,datasheet={};
+                var count= 0,progress=0;
+                var $loading=$lq("#loading"),$progress=$lq("#loadingPart3 .progress",$loading[0]),$tip=$lq("#loadingPart3 .loadingText",$loading[0]),$loadingBg=$lq("#loadingBg",$loading[0]),
+                        $circles=$lq("#loadingPart1 i,#loadingPart2 i",$loading[0]),$part12=$lq("#loadingPart1,#loadingPart2",$loading[0]),$part3=$lq("#loadingPart3",$loading[0]);
+                $lq.forEeach(images,function(i,image){
+                    $lq.loadImage(url.images+image,function(src,success){
+                        loadProgress("图片加载");
+                    });
+                });
+                $lq.forEeach(dataset,function(i,url){
+                    $lq.ajax({
+                        async:false,
+                        method:"post",
+                        url:url,
+                        success:function(json){
+                            var data=$lq.parseJson(json);
+                            var id=data.id;
+                            datasheet[id]=data;
+                            loadProgress("数据加载");
+                        }
+                    });
+                });
+                function bundle(){
+                    $loadingBg.one("animationend",function(){
+                        $loadingBg.setStyle("className","hidden");
+                        $part3.setStyle("display","none");
+                        $part12.setStyle("className","small")
+                        loadedIndex=true;
+                        hidden();
+                    });
+                };
+                function loadProgress(text){
+                    count++;
+                    progress=parseInt((count/len)*100);
+                    tip(text,progress);
+                    finish();
+                };
+                function finish(){
+                    if(progress==100){
+                        tip("加载完成",progress);
+                        $loadingBg.setStyle("className","off");
+                    }
+                };
+                function  tip(text,progress){
+                    var text=text||"加载中";
+                    var progress= progress!=undefined ?progress:100;
+                    $tip.html(text);
+                    $progress.html(progress+"%");
+                };
+                function show(){
+                    if(loadedIndex==false){return;}
+                    $circles.removeClass("off").addClass("in");
+                    $loading.setStyle("display","block");
+                    loading=true;
+                };
+                function hidden(){
+                    if(loadedIndex==false){return;}
+                    $circles.removeClass("in").addClass("off");
+                    $loading.setStyle("display","none");
+                    loading=false;
+                };
+                function init(){
+                    bundle();
+                };
+                init();
+                return {
+                    isLoading:function(){
+                        return loading;
+                    },
+                    datasheet:datasheet,
+                    tip:tip,
+                    iner:show,
+                    out:hidden
+                }
+            }();
+            var win=function(){
+                var $win=$lq("#windowInfo"),$winQRCode=$lq("#winQRCode",$win[0]),$QRCode=$lq("#QRCode",$icon[0]),width=view.win.w;
+                function setWinQR(){
+                    var posX=$icon[0].offsetLeft-120,posY=$icon[0].offsetTop+20;
+                    console.log("............................",$icon[0].offsetLeft,$winQRCode[0].offsetWidth/2);
+                    $winQRCode.setStyles({
+                        left:posX,top:posY
+                    });
+                };
+                function bundle(){
+                    $QRCode.on("end",function(){
+                        show();
+                    });
+                    //$lq.on(document,"down",hidden);
+                    $win.on("down",hidden);
+                };
+                function init(){
+                    $win.setStyle("className","off");
+                    bundle();
+                }
+                init();
+                function show(){
+                    $win.setStyle("className","on");
+                    $winQRCode.setStyle("className","show");
+                }
+                function hidden(){
+                    $win.setStyle("className","off");
+                    $winQRCode.setStyle("className"," ");
+                }
+                return {
+                    update:function(){
+                        setWinQR();
+                        width=view.win.w;
+                        if(width<=900){
+                            hidden();
+                        }
+                    },
+                    show:show,
+                    hidden:hidden
+                }
+            }();
+           //整站框架
+            var frame=function(){
+                var winH=view.win.h,winW=view.win.w;
+                var slider=new $lq.controller(contentUl,[
+                    {
+                        id:navUl,
+                        event:{
+                            down:function(e){
+                                console.log("down");
+                                var e=$lq.compatEvent(e,this);
+                                console.log(e.target.tagName.toLowerCase());
+                                var target= e.target.tagName.toLowerCase()=="i"? e.target.parentNode.parentNode.parentNode:(e.target.tagName.toLowerCase()=="a"? e.target.parentNode: e.target);
+                                var index=$lq.dataSet(target,"index");
+                                if(index!=undefined){
+                                    slider.moveTo(index);
+                                }
+                            }
+                        }
+                    }
+                ],{
+                    id:typeModel,
+                    event:{
+                        end:function(e){
+                            var e=$lq.compatEvent(e,this);
+                            var target=e.target;
+                            slider.switchType($lq.dataSet(target,"type"));
+                            /*   if(target.dataset){
+                             slider.switchType(target.dataset.type);
+                             }else{
+                             slider.switchType($lq.attr(target,"data-type"));
+                             }*/
+                            //console.log(target.dataset.type,target.tagName);
+                        }
+                    },
+                    activeType:"top",
+                    switchType:function(type){
+                        console.log(type);
+                        this.content[0].style.transition="null";
+                        this.content.setStyle("className",type);
+                        this.contentLis.setStyle("className",type);
+                        if(type=="top" || type=="left"){
+                            var flat=$lq.getClientWin().h,flatName="translateY";
+                            if(type=="top"){
+                                flat=$lq.getClientWin().h,flatName="translateY";
+                            }else{
+                                flat=$lq.getClientWin().w,flatName="translateX";
+                            }
+                            var str=flatName+"("+-flat*this.activeIndex+"px)";
+                            this.content[0].style.transform=str;
+                        }else{
+                            this.content[0].style.transform="translate(0,0)";
+                            $lq.addClass(this.contentLis[this.activeIndex],"show");
+                        }
+
+                    },
+                    move:{
+                        leftRight:function(type){
+                            var that=this;
+                            //var active=this.activeIndex,pre=this.previousIndex;
+                            this.isSame()? move3DLeftRight.call(that,type): setTimeout(function(){
+                                move3DLeftRight.call(that,type);
+                            },500);
+
+                        },
+                        top:function(type){
+                            var that=this;
+                            //var active=this.activeIndex,pre=this.previousIndex;
+                            this.isSame()? moveflat.call(that,type): setTimeout(function(){
+                                moveflat.call(that,type);
+                            },500);
+                        },
+                        left:function(type){
+                            var that=this;
+                            //var active=this.activeIndex,pre=this.previousIndex;
+                            this.isSame()? moveflat.call(that,type): setTimeout(function(){
+                                moveflat.call(that,type);
+                            },500);
+                        }
+                    }
+                },{
+                    ing:function(e,el){
+                        this.setMoving(true);
+                        var active=this.activeIndex,pre=this.previousIndex;
+                        active != pre && (page[pre].out(),navLisUp[this.previousIndex].style.width="");
+                        loader.iner();
+                    },
+                    loop:true,
+                    active:0
+                });
+                function displayBackground(){
+                    contentDisplay.run(function(el,i){
+                        var color="";
+                        switch(i){
+                            case 0:
+                                color="rgba(96,87,255,0.7)";
+                                break;
+                            case 1:
+                                color="rgba(86,172,211,0.7)";
+                                break;
+                            case 2:
+                                color="rgba(115,134,138,0.7)";
+                                break;
+                        };
+                        $lq.setStyle(el,"background",color);
+                    });
+                };
+                function switchEnd(e){
+                    contentDisplay.setStyle("background","none");
+                    var active=slider.activeIndex,pre=slider.previousIndex,e=$lq.getEvent(e);
+                    console.log("结束事件类型为："+e.type,"pre..................."+pre,"active..................."+active);
+                    page[active].iner();
+                    var delay=active==pre? 1:500;
+                    setTimeout(function(){
+                        loader.out();
+                        slider.setMoving(false);
+                    },delay);
+
+                };
+                function move3DLeftRight(){
+                    var pre=this.previousIndex,act=this.activeIndex;
+                    displayBackground();
+                    moveCommon.call(this,act,pre);
+                    console.log("hhahhah",this.contentLis[act]);
+                    $lq.one(this.contentLis[act],"animationend",switchEnd);
+                    this.contentLis.setStyle("className","leftRight");
+                    if(pre>act){
+                        $lq.addClass(this.contentLis[pre],"rightHide");
+                        $lq.addClass(this.contentLis[act],"leftShow");
+                    }else if(pre<act){
+                        $lq.addClass(this.contentLis[pre],"leftHide");
+                        $lq.addClass(this.contentLis[act],"rightShow");
+                    }else{
+                        $lq.addClass(this.contentLis[act],"show");
+                        $lq.trigger(this.contentLis[act],"animationend");
+                    }
+                };
+                function moveflat(type){
+                    var type=type || "left",newPos,translate,pre=this.previousIndex,act=this.activeIndex;
+                    moveCommon.call(this,act,pre);
+                    type=="top"?(newPos=-winH*act,translate={translateY:newPos}):(newPos=-winW*act,translate={translateX:newPos});
+                    console.log("????????????????????????????????????"+type+"----",newPos,translate,act);
+                    if(act==pre){
+                        var that=this;
+                        that.content.setStyle("translate",translate);
+                        that.content.one("transitionend",switchEnd);
+                        that.content.trigger("transitionend");
+                    }else{
+                        this.content.transition({translate:translate},{
+                            end:switchEnd
+                        });
+                    }
+                    /*     if(this.isFirst&&this.activeIndex==0){
+                     var that=this;
+                     setTimeout(function(){
+                     that.content.trigger("transitionend");
+                     },200);
+                     }*/
+                };
+                function moveCommon(act,pre){
+                    var elPos=$lq.getOffset(this.controlLis[0][act]);
+                    //var pos=elPos.pageX+elPos.clientW/2-arrow[0].offsetWidth/2;
+                    var pos=elPos.pageX;
+                    arrow.transition({left:pos},{duration:300});
+                    navLisUp[act].style.width="100%";
+                    /*  contentBgLis.run(function(el,index){
+                     if(index==act){
+                     $lq.setStyle(el,"className","on");
+                     }else{
+                     $lq.setStyle(el,"className","off");
+                     }
+                     });*/
+                    act!=pre && (contentBgLis[pre].className="");
+                    contentBgLis[act].className="on";
+                };
+                function init(){
+                    bundle();
+                }
+                function bundle(){
+                    $lq.on($lq,"resize",resize);
+                    $lq.on(document,"mousewheel",  $lq.throttle(mousewheelTo,150));
+                }
+                function resize(){
+                    //更新视图
+                    view.update();
+                    winH=view.win.h,winW=view.win.w;
+                    var contentW=view.content.w,contentH=view.content.h,usedH=view.displayMin.h>contentH?view.displayMin.h:contentH,usedW=view.displayMin.w>contentW?view.displayMin.w:contentW;
+                    content.setStyle("height",contentH);
+                    console.log(">>>>>>>>>>>>",contentH,winW,contentW,content[0].offsetWidth);
+                    contentDisplay.run(function(el,index){
+                        //思路：视图大于样式，则居中，视图小于样式则采用视图大小。
+                        //清除前次style样式
+                        //el.style="none";//注意该方式IE11下无效
+                        $lq.attr(el,"style","none");
+                        var positionX=contentW/2-el.offsetWidth/2,positionY=contentH/2-el.offsetHeight/2;
+                        if(positionX<0){
+                            positionX=0;
+                            $lq.setStyle(el,"width",usedW);
+                        }
+                        if(positionY<0){
+                            positionY=0;
+                            $lq.setStyle(el,"height",usedH);
+                        };
+                        $lq.setStyles(el,{
+                            left:positionX,
+                            top:positionY
+                        });
+                    });
+                    //更新窗口位置
+                    win.update();
+                    //更新滑块
+                    slider.moveTo(undefined,true);
+                    //更新各个拖拽
+                    library.update();
+                    ball.update();
+                    musicPlay.update();
+                };
+                function mousewheelTo(e){
+                    if(loader.isLoading()){return;}
+                    var e= $lq.compatEvent(e),index=slider.activeIndex;
+                    e.delta>0?index--:index++;
+                    //console.log(index)
+                    //navLis[index].children[0].children[0].style.width="100%";
+                    slider.moveTo( index);
+                };
+                init();
+
+            }();
+            //模块
+            var library=function(){
+                var winW=view.win.w;
+                //背景
+                //var mountains=$lq("#mountain img",waveWrap[0]);
+                var mountains=$lq("#mountain i.mountainImg",waveWrap[0]);
+                //描述
+                var   wrapMin=$lq("#bookListMin",content[0]),booklistMin=$lq("#bookListMin ul",wrapMin[0]),booklist=$lq("#bookList",content[0]),booklistD=$lq("div",booklist[0]),description=$lq("#description"),describe=$lq(".describe",description[0]);
+                function init(){
+                    bundle();
+                };
+                function moveMountains(e){
+                    var e=$lq.getEvent(e);
+                    var x= e.pageX;
+                    var centerX=winW/ 2;
+                    mountains.run(function(el,index){
+                        var plus=index==1?1:-1;
+                        var num=plus*(centerX-x)/90*el.style.zIndex ;
+                        $lq.setStyles(el,{
+                            transform:"translateX("+num+"px)"
+                        })
+                    });
+                };
+                function bundle(){
+                    //$lq.on(contentLis[0],"move",moveMountains);
+                    $lq.on(contentLis[0],"move",$lq.throttle(function(e){
+                        moveMountains(e);
+                    },10));
+                };
+                var textControl=new $lq.controller(description,
+                        {
+                            id:booklist,
+                            event:{
+                                down:function(e){down(e,"div");}
+                            }
+                        },
+                        {activeType:"text",move:{
+                            text:function(type){textMovie.call(this);}
+                        }});
+           /*     booklistMin.on("down",function(e){
+                    down(e,"a");
+                });*/
+                new $lq.tap(booklistMin,function(e){
+                    down(e,"a");
+                },{position:"x"});
+                var drag_booklist=new $lq.drag(booklistMin,{position:"x",overfull:false});
+                function down(e,tagName){
+                    var e=$lq.getEvent(e);
+                    var tar=$lq.getTarget(e);
+                    var tag=tar.nodeName.toLowerCase();
+                    var index=0;
+                    if(tag==tagName|| tag=="h1"  ){
+                        var li=tag=="h1"?tar.parentNode.parentNode:tar.parentNode;
+                        index=$lq.dataSet(li,"index");
+                        textControl.moveTo(index);
+                    }
+                }
+                function textMovie(){
+                    this.setMoving(true);
+                    loader.iner();
+                    var active=this.activeIndex,pre=this.previousIndex,that=this;
+                    //文字整体section
+                    hidenText();
+                    showText();
+                }
+                function showText(){
+                    var active=textControl.activeIndex,pre=textControl.previousIndex;;
+                    $lq.setStyle( textControl.contentLis[active],"className","textShow");
+                    //描述部分.describe
+                    //$lq.addClass(describe[active],"describeMovie");
+                    $lq.setStyle(describe[active],"className","describe describeMovie");
+                    //标题部分
+                    var activeTitles=$lq(".title span",textControl.contentLis[active]);
+                    activeTitles.run(function(el,i){
+                        setTimeout(function(){
+                            $lq.setStyle(el,"className","titleMovie")
+                        },i*50)
+                    });
+                    $lq.one(describe[active],"animationend",function(){
+                        console.log("activetextend");
+                        textControl.setMoving(false);
+                        loader.out();
+                    });
+                    if(pre==active){
+                        $lq.trigger(describe[active],"animationend");
+                    }
+                }
+                function hidenText(isOut){
+                    var active=textControl.activeIndex,pre=textControl.previousIndex;
+                    if(active!=pre || isOut){
+                        var operater=isOut?active:pre;
+                        $lq.setStyle(describe[operater],"className","describe describeMovieOff");
+                        $lq.one(describe[operater],"animationend",function(){
+                            console.log("pretextend");
+                            $lq.setStyle( textControl.contentLis[operater],"className"," ");
+                        });
+                        var preTitles=$lq(".title span",textControl.contentLis[operater]);
+                        preTitles.run(function(el,i){
+                            setTimeout(function(){
+                                $lq.setStyle(el,"className","titleMovieOff")
+                            },i*50)
+                        });
+
+                    }
+                }
+                function hidden(){
+                    wrapMin.setStyle("className","minOff");
+                    booklistD.setStyle("className","bookListOff");
+                    hidenText(true);
+                };
+                function show(){
+                    wrapMin.setStyle("className","minMovie");
+                    booklistD.run(function(el,i){
+                        setTimeout(function(){
+                            $lq.setStyle(el,"className","bookListShow");
+                        },i*100);
+                    });
+                    showText();
+                };
+                init();
+                return{
+                    iner:show,
+                    out:hidden,
+                    update:function(){
+                        winW=view.win.w;
+                        drag_booklist.update();
+                    }
+                } ;
+            }();
+            var ball=function(){
+                var winH=view.win.h,winW=view.win.w,contentW=winW;
+                var catalog=$lq("#catalog"),baseBall=$lq(".circleBase",catalog[0]),subline=$lq(".circleSubline",catalog[0]),outline=$lq(".circleOutLine",catalog[0]),node=$lq("#ballSvg"),nodes,circleText=$lq(".circleCenter p",baseBall[0]),wave=$lq(".waveBall",baseBall[0]);
+                var energyBall=$lq("#energyBall"),wrapMin=$lq("#ballMin",content[0]),ballMin=$lq("#ballMin ul",wrapMin[0]),ballMinWidth= 0,drag_ballMin=undefined;
+                var total=160;
+                var ballControl=null,data=loader.datasheet.ballList.data;
+                console.log("<>>>>>>>>>>>>>>>>>>>>>>>>>>>>ballList.......",loader.datasheet.ballList);
+                function init(){
+                     $lq.forEeach(data,function(i,item){
+                            create_data(item);
+                     });
+                    ballMin.setStyle("width",ballMinWidth);
+                    console.log("ballMIN",ballMinWidth);
+                    nodes=$lq("#ballSvg>g", node[0]);
+                /*    ballControl=new controller(circleCenter, {id:node,
+                                event:{
+                                    start:function(e){}
+                                }
+                            },
+                            {
+                            activeType:"wave",
+                            move:{
+                                wave:function(){
+                                    console.log("vavvaedd");
+                                }
+                            }
+                        },{lonely:true});*/
+                    bundle();
+                }
+                function clickStar(e) {
+                    var e=$lq.getEvent(e),tar=$lq.getTarget(e),tagName=tar.tagName.toLowerCase(),g=null;//g=tagName=="text" ||tagName=="circle" ? tar.parentNode : tar;
+                    switch(tagName){
+                        case "text":case"circle":case "a":
+                            g=tar.parentNode;
+                            break;
+                        case "h1":
+                            g=tar.parentNode.parentNode;
+                            break;
+                        default:
+                            g=tar;
+                            break;
+                    }
+                    var pro=$lq.dataSet(g,"progress");
+                    var dis=0;
+                    if(pro!=undefined ){
+                        if(pro>100 || pro<0){
+                            pro=0;
+                        }else if(pro>1 && pro<=100){
+                            pro=parseInt(pro)/100;
+                        }
+                        dis=-(pro*total);
+                        wave.transition({translateY:dis});
+                        circleText[0].innerHTML="熟练度"+pro*100+"%";
+                        circleText[1].innerHTML= $lq.dataSet(g,"text");
+
+                    }else if(g!=this){
+                        wave.transition({translateY:0});
+                        circleText[0].innerHTML="前端开发";
+                        circleText[1].innerHTML="技能图谱";
+                    }
+                }
+                function bundle(){
+                    node.on("start",clickStar);
+                    new $lq.tap(ballMin,function(e){
+                        clickStar(e);
+                    },{position:"x"});
+                    drag_ballMin=new $lq.drag(ballMin,{position:"x",overfull:false});
+                    //energyBall.on("move", $lq.client.simple.name=="ie"?ballRotate:$lq.throttle(ballRotate,10));
+                    energyBall.on("move", ballRotate);
+                };
+                function ballRotate(e){
+                    var e=$lq.getEvent(e);
+                    var x= e.pageX,y= e.pageY;
+                    var centerX=contentW/ 2,centerY=winH/ 2;
+                    var disX=(centerX-x)*0.1,disY=(centerY-y)*0.1;
+                    catalog[0].style.transition="none";
+                    if(disY>26 || disY<-34  ||disX>45 ||disX<-45){
+                        catalog[0].style.transition="0.2s ease-out";
+                        catalog[0].style.transform = 'rotateX(0deg) rotateY(0deg)';
+                    }else{
+                        if( disY>20 ){
+                            disY=20;
+                        }else if( disY<-20 ){
+                            disY=-20;
+                        }
+                        if( disX>20 ){
+                            disX=20;
+                        }else if( disX<-20 ){
+                            disX=-20;
+                        }
+                        catalog[0].style.transform = 'rotateX('+disY+'deg) rotateY('+disX+'deg)';
+                    }
+                };
+                init();
+                function create_min(data){
+                    var li=document.createElement("li"),text=data.text.cont;
+                    data.text.progress!=undefined&& $lq.dataSet(li,"progress",data.text.progress);
+                    $lq.dataSet(li,"text",text);
+                    var a=document.createElement("a");
+                    a.href="javascript:;";
+                    //$lq.attr(a,"ondragstart","return false");
+                    var h1=document.createElement("h1");
+                    h1.innerHTML=text;
+                    a.appendChild(h1);
+                    li.appendChild(a);
+                    ballMin[0].appendChild(li);
+                    console.log("-------------",h1.innerHTML,li.offsetWidth,li.style.width,$lq.getStyle(li,"width"));
+                    ballMinWidth+=li.offsetWidth;
+                };
+                function create_data( data ){
+                    //var oG = createTag("g",{data:{user:"userinfo"},class:"userG"});
+                    var oG = createTag("g",{data:{user:"userinfo"}});
+                    for( var i=0; i<data.length; i++ ){
+                        var oGNode = createTag("g",{style:'cursor:pointer'});
+                        if( data[i].text ){
+                            var objAttr={x:data[i].text.x,y:data[i].text.y,fill:'rgba(255,255,255,0.6)','font-size':14,transform:'rotate('+data[i].text.rotate+','+data[i].text.x+','+data[i].text.y+')'};
+                            var oText = 	createTag('text',objAttr);
+                            oText.innerHTML = data[i].text.cont;
+                            if(!oText.childNodes[0]){
+                                //在IE11,10已经一些移动端SVG下是不支持innerHTML渲染的。因为SVG是标准的XML结构。
+                                //方法1，直接添加文本节点
+                                var textNode=document.createTextNode(data[i].text.cont);
+                                oText.appendChild(textNode);
+                                //方法2，采用标准的HTML元素div的innerHTML功能添加
+                                /*		 var div=document.createElement("div");
+                                 div.innerHTML="<text>"+data[i].text.cont+"</text>";
+                                 oText=div.childNodes[0];
+
+                                 for(var attr in objAttr){
+                                 oText.setAttribute( attr,objAttr[attr] );
+                                 }*/
+                            }
+                            data[i].text.progress!=undefined&& $lq.dataSet(oGNode,"progress",data[i].text.progress);
+                            $lq.dataSet(oGNode,"text",data[i].text.cont);
+                            oGNode.appendChild(oText);
+                            create_min(data[i]);
+                        };
+                        if( data[i+1] && data[i+1].circle && data[i+1].circle.line != 'none' ){
+                            //console.log("line:",data[i+1].circle.line)
+                            oGNode.appendChild( createTag('line',{x1:data[i].circle.x,y1:data[i].circle.y,x2:data[i+1].circle.x,y2:data[i+1].circle.y,'stroke':'rgba(205,228,232,0.6)','stroke-width':'2'}) );
+                        };
+                        if( data[i].circle && data[i].circle && data[i].circle.dot!=='none' ){
+                            oGNode.appendChild( createTag('circle',{cx:data[i].circle.x,cy:data[i].circle.y,r:data[i].circle.size,'fill':'rgba(205,228,232,1)','stroke':'rgba(227,158,158,1)','stroke-width':'3'}) );
+                        };
+                        oG.appendChild(oGNode);
+                    }
+                    node[0].appendChild(oG);
+                }
+                function createTag( tag,objAttr ){
+                    var oTag = document.createElementNS('http://www.w3.org/2000/svg',tag);
+                    var objAttr=objAttr||{};
+                    for( var attr in objAttr ){
+                        var attrValue=objAttr[attr];
+                        switch(attr){
+                            case "style":
+                                $lq.isString(attrValue)? $lq.attr(oTag,attr,attrValue): $lq.setStyles(oTag,attrValue);
+                                break;
+                            case "data":
+                                $lq.dataSet(oTag,attrValue);
+                                break
+                            default:
+                                $lq.attr(oTag,attr,attrValue);
+                                break;
+                        }
+                    }
+                    //$lq.attr(oTag,objAttr);
+                    return oTag;
+                }
+                function show(){
+                    wrapMin.setStyle("className","minMovie");
+                    baseBall.removeClass("circleBaseOff").addClass("circleBaseMovie");
+                    subline.removeClass("sublineOff").addClass("sublineMovie");
+                    outline.removeClass("outlineOff").addClass("outlineMovie");
+                    node.attr("class","ballSvgMovie");
+                }
+                function hidden(){
+                    wrapMin.setStyle("className","minOff");
+                    baseBall.removeClass("circleBaseMovie").addClass("circleBaseOff");
+                    subline.removeClass("sublineMovie").addClass("sublineOff");
+                    outline.removeClass("outlineMovie").addClass("outlineOff");
+                    node.attr("class","ballSvgOff");
+                    catalog[0].style.transition="0.2s ease-out";
+                    catalog[0].style.transform = 'rotateX(0deg) rotateY(0deg)';
+                }
+                return{
+                    iner:show,
+                    out:hidden,
+                    update:function(){
+                        winH=view.win.h,winW=view.win.w,contentW=winW;
+                        drag_ballMin&&drag_ballMin.update();
+                    }
+                } ;
+            }();
+            var musicPlay=function(){
+                var contentH=view.content.h;
+                var audio=$lq("#audioPlay"),disc=$lq("#musicDisc",audio[0]),play=$lq("#musicPlay",audio[0]);
+                //$maskList=$lq(".maskList", $wrap[0])
+                var listInfo={},musicInfo={};
+                var $wrap=$lq("#wrap_music"),$musicMenu=$lq(".musicMenu",$wrap[0]),$boxList=$lq(".musicList", $musicMenu[0]),$musicUl=$lq("ul",$boxList[0]),$musicLis=$lq("li",$musicUl[0]),$titleText=$lq(".titleText",$musicMenu[0]),$titleIcon=$lq(".titleIcon",$musicMenu[0]),
+                        $musicFoot=$lq(".musicFoot",$musicMenu[0]), $foots=$lq(".musicFootIcon,.musicFootText,.musicFootBtn",$musicFoot[0]),
+                        $musicDetail=$lq(".musicDetail",$wrap[0]),$detailTitle=$lq(".detail_title",$musicDetail[0]),$time=$lq(".details_nowTime,.details_allTime",$musicDetail[0]),$playerBtn=$lq(".details_play,.details_prev,.details_next",$musicDetail[0]),
+                        $progress=$lq(".detail_proUp,.detail_proBtn",$musicDetail[0]),
+                        $lyric=$lq(".detail_lyric",$wrap[0]),$lyricUl=$lq(".detail_lyric ul",$lyric[0]),$lyricLis=$lq(".detail_lyric li",$lyricUl[0]),
+                        $audio=$lq("#audioPlayer");
+                var dragList=null,progressDrag=null;
+        /*        function getListInfo(){
+                    return {
+                        //boxH:$boxList.getStyle("height")[0],
+                        //ulH:$musicUl.getStyle("height")[0],
+                        boxH:$boxList.getStyle("height")[0],
+                        ulH:$musicUl.getStyle("height")[0],
+                        listLen:0,
+                        active:0
+                    }
+                };*/
+                /*----------------------------------------------------------list*/
+                var musicList=function(){
+                    function init(){
+                        createList();
+                        bundle();
+                    }
+                    function createList(){
+                        var data=loader.datasheet.musicList;
+                        var audio=data.music,len=audio.length,info=data.info,lyrics=data.lyrics,len=data.length;
+                        var defaultId=null;
+                        var defaultIndex=null;
+                        for(var i=0; i<len;i++){
+                            var music=info[audio[i].id];
+                            var li=document.createElement("li");
+                            li.innerHTML= '<h3>'+(music.song)+'</h3><p>'+(music.singer)+'</p>';
+                            $lq.attr(li,"music",audio[i].id);
+                            $musicUl[0].appendChild(li);
+                            if(music.defaultId){
+                                defaultId=audio[i].id;
+                                defaultIndex=i;
+                            }
+                        }
+                        $musicLis.update($musicUl[0]);
+                        listInfo.listLen=len;
+                        //listInfo.ulH=$musicUl[0].offsetHeight;
+                        //listInfo.boxH=$boxList[0].offsetHeight;
+                        listInfo.ulH=$musicUl.getStyle("height")[0];
+                        listInfo.boxH=$boxList.getStyle("height")[0];
+                        musicInfo= {
+                            music:audio,
+                            lyrics:lyrics,
+                            info: info
+                        };
+                        $titleText.html("歌曲"+len+"首");
+                        // listInfo=getListInfo();
+                        //  console.log(listInfo.boxH,listInfo.ulH,$musicUl[0].currentStyle["height"],window.getComputedStyle($musicUl[0],null)["height"])
+                        musicInfo.active=defaultId !=null?defaultId:musicInfo.music[0].id;
+                        musicInfo.index=defaultIndex !=null?defaultIndex:0;
+                        active(musicInfo.index);
+                        dragList=new $lq.drag($musicUl,{position:"y",shake:true});
+                        player.load();
+                    };
+                    function bundle(){
+                        $musicUl.delegate("up",function (){
+                            if(dragList.moving){return};
+                            var obj=this.tagName.toLowerCase()=="li"?this:this.parentNode;
+                            active(obj);
+                            player.load();
+                        },["li","h3","p"]);
+                        $musicFoot.on("up",function(e){
+                            var e=$lq.getEvent(e);
+                            var tar= $lq.getTarget(e);
+                            if(tar.className=="musicFootBtn"){
+                                player.playerStatus();
+                                return false;
+                            }else if($lq.hasClass(tar,"musicFootIcon")||(tar.className=="musicFootText" || tar.parentNode.className=="musicFootText")){
+                                musicDetail.slideUp();
+                            }
+                        });
+                        $titleIcon.on("start",function(){
+                            musicDetail.slideUp();
+                        });
+                    };
+                    function active(obj){
+                        var obj=$lq.isElement(obj)?obj:(function(){
+                            var index=parseInt(obj);
+                            return $musicLis[index];
+                        })();
+                        var flag=$lq.attr(obj,"music");
+                        musicInfo.active=flag;
+                        $musicLis.run(function(el,index){
+                            if(el==obj){
+                                $lq.addClass(el,"active");
+                                musicInfo.index=index;
+                            }else{
+                                $lq.removeClass(el,"active");
+                            }
+                        });
+                    };
+                    function showContent(){
+                        var flag=musicInfo.active;
+                        $foots[1].children[0].innerHTML=musicInfo.info[flag].song;
+                        $foots[1].children[1].innerHTML=musicInfo.info[flag].singer;
+                        $foots[0].src=musicInfo.info[flag].img;
+                        $lq.addClass($foots[0],"move");
+                        //$maskList.setStyles({"backgroundImage":"url("+musicInfo.info[flag].img+")"});
+                         musicBg.setStyles({"backgroundImage":"url("+musicInfo.info[flag].img+")"});
+                        //musicBg.setStyles({"backgroundImage":"url(css/1.svg)"});
+                       /* var bg=$lq("#musicSvg image");
+                        bg.attr("width",winW);
+                        bg.attr("height",contentH);
+                        console.log(musicBg);*/
+                    };
+                    return {
+                        init:init,
+                        show:showContent,
+                        active:active
+                    }
+                }();
+                /*----------------------------------------------------detail*/
+                var musicDetail=function(){
+                    var re = /\[[^[]+/g;
+                    var liH=0;
+                    var arr=[];
+                    function init(){
+                        //$musicDetail.transition({translate:{translateY:contentH}});
+                        slideUp();
+                        bundle();
+                    }
+                    function slideUp(){
+                        //$musicMenu.setStyle("opacity",0);
+                        //$musicMenu.setStyle("display","none");
+                        $musicMenu.setStyle("visibility","hidden");
+                        //$lq.transform($musicDetail[0],{translate:{translateY:0}},true);
+                        $musicDetail.transition({translate:{translateY:0}},{duration:300});
+                   /*     $musicDetail.setStyles({
+                            transition:"0.5s",
+                            transform:"translate3d(0,0,0)"
+                        });*/
+                    }
+                    function slideDown(){
+                        //$musicMenu.setStyle("opacity",1);
+                        //$musicMenu.setStyle("display","block");
+                        $musicMenu.setStyle("visibility","visible");
+                        //musicList.showContent();
+                   /*     $musicDetail.setStyles({
+                            transform:"translate3d(0,"+contentH+"px,0)"
+                        })*/
+                        $lq.transform($musicDetail[0],{translate:{translateY:contentH}},true);
+                        //$musicDetail.transition({translate:{translateY:contentH}});
+                    }
+                    function bundle(){
+                        $detailTitle.on("start",slideDown)
+                    }
+                    function showContent(){
+                        $detailTitle[0].children[0].innerHTML=musicInfo.info[musicInfo.active].song;
+                        showLyric();
+                    }
+                    function showLyric(){
+                        $lq.removeChildren($lyricUl[0]);
+                        musicDetail.preNum=0;
+                        $lyricUl.setStyle('transform','translate3d(0,0,0)');
+
+                        var id=musicInfo.active;
+                        var lyric=musicInfo.lyrics[id];
+                        arr = lyric.match(re);
+                        for(var i=0;i<arr.length;i++){
+                            arr[i] = [formatTime(arr[i].substring(0,10)) , arr[i].substring(10).trim()];
+                        }
+                        for(var j=0;j<arr.length;j++){
+                            var li=document.createElement("li");
+                            li.innerHTML=arr[j][1];
+                            $lyricUl[0].appendChild(li);
+                        };
+                        $lyricLis.update($lyricUl[0]);
+                        liH=$lyricLis.addClass({0:["active"]}).outHeight({0:["height"]})[0];
+                        //iLiH = $li.first().outerHeight(true);
+
+                    };
+                    function formatTime(num){   //格式日期
+                        num = num.substring(1,num.length-1);
+                        var arr = num.split(':');
+                        return (parseFloat(arr[0]*60) + parseFloat(arr[1])).toFixed(2);
+                    }
+                    function scrollLyric(ct){    //滚动歌词
+                        //console.log(ct);
+                        for(var i= musicDetail.preNum;i<arr.length;i++){
+
+                            if( i != arr.length - 1 && ct > arr[i][0] && ct < arr[i+1][0] ){
+                                //$li.eq(i).attr('class','active').siblings().attr('class','');
+                                $lyricLis.run(function(el,index){
+                                    index==i? $lq.addClass(el,"active"): $lq.removeClass(el,"active");
+                                });
+                                i>3? $lyricUl.setStyle('transform','translate3d(0,'+(-liH*(i-3))+'px,0)'): $lyricUl.setStyle('transform','translate3d(0,0,0)');
+                                musicDetail.preNum=i;
+                                return;
+                            }
+                            else if(i == arr.length-1 && ct > arr[i][0]){
+                                $lyricLis.run(function(el,index){
+                                    index==i? $lq.addClass(el,"active"): $lq.removeClass(el,"active");
+                                });
+                                //$li.eq(i).attr('class','active').siblings().attr('class','');
+                                $lyricUl.setStyle('transform','translate3d(0,'+(-liH*(i-3))+'px,0)');
+                                musicDetail.preNum=i;
+                                return;
+                            }
+                        }
+                    }
+
+                    return {
+                        init:init,
+                        preNum:0,
+                        slideUp:slideUp,
+                        slideDown:slideDown,
+                        show:showContent,
+                        scrollLyric:scrollLyric
+                    }
+                }();
+                /*----------------------------------------------------musicLoading*/
+                var loading=function(){
+                    var $musicIcon=$lq("#musicIcon",$icon[0]),$musicLoading=$lq(".musicLoading",$wrap[0]);
+                    var isLoading=true;
+                    function show(){
+                        isLoading=true;
+                        $musicIcon.setStyle("backgroundImage","url("+url.musicImg+"musicLoading.gif)");
+                        $musicLoading.setStyle("display","block");
+                    };
+                    function hidden(){
+                        isLoading=false;
+                        $musicLoading.setStyle("display","none");
+                    }
+                    return {
+                        isLoading:function(){
+                            return isLoading;
+                        },
+                        icon:$musicIcon,
+                        show:show,
+                        hidden:hidden
+                    }
+                }();
+                /*------------------------------------------------------------------player*/
+                var player=function(){
+                    var icon=loading.icon;
+                    var timer=null,onoff=true,over=false,scale=0;
+                    var barW=$lq.getStyle($progress[0].parentNode,"width");
+                    function init(){
+                        bundle();
+                    };
+                    function bundle(){
+                        $playerBtn.on("end",function(){
+                            switch(this.className){
+                                case "details_play":
+                                    playerStatus();
+                                    break;
+                                case "details_prev":
+                                    prev();
+                                    break;
+                                case "details_next" :
+                                    next();
+                                    break;
+                            }
+                        });
+                        icon.on("end",function(){
+                            if(loading.isLoading()){return false;}
+                            playerStatus();
+                        });
+                        $audio.on("loadstart",function(){
+                            console.log("开始加载。。。。歌曲："+$audio[0].src);
+                            loading.show();
+                        }).on('canplaythrough',function(e){
+                            //if(!once){return};
+                            // once=false;
+                            console.log("音乐播放器事件canplaythrough,持续播放指定的音频/视频时。");
+                            var e=$lq.getEvent(e);
+                            $time[1].innerHTML=formatTime($audio[0].duration);
+                            player.pre=musicInfo.index;
+                            playerStatus();
+                            loading.hidden();
+                        }).on("ended",function(e){
+                            console.log("音乐播放器事件END");
+                        });
+                        slider();
+                    };
+                    function slider(){
+                        progressDrag= new $lq.drag($progress[1],{position:"x",slide:false,overflow:false,
+                            before:function(e){
+                                clearInterval(timer);
+                                musicDetail.preNum=0;
+                            },
+                            ing:function(e){
+                                scale=progressDrag.now().x/barW;
+                                console.log("ing",scale);
+                            },
+                            end:function(e){
+                                $audio[0].currentTime =scale*$audio[0].duration;
+                                console.log("end",scale);
+                                //console.log( $audio[0].currentTime,scale*$audio[0].duration);
+                                progress();
+                                clearInterval(timer);
+                                timer=setInterval(progress,1000);
+                            }
+                        });
+                /*        $progress.on({1:["start",function(e){
+                            clearInterval(timer);
+                            musicDetail.preNum=0;
+                            var e=$lq.getEvent(e);
+                            var touches= e.touches ? e.touches[0]:e;
+                            var y=touches.pageX-this.offsetLeft;
+                            var that=this;
+                            function documentMove(ev){
+                                var ev=$lq.getEvent(ev);
+                                var touches= ev.touches ? ev.touches[0]:ev;
+                                var dis=touches.pageX-y;
+                                if(dis<0){
+                                    dis=0;
+                                }else if(dis>barW){
+                                    dis=barW;
+                                }
+                                that.style.left=dis+"px";
+                                scale=dis/barW;
+                                window.getSelection ? window.getSelection().removeAllRanges() : document.selection.empty();   // 防止拖动滑块的时候， 选中文字
+                            };
+                            $lq.on(document,"move",documentMove);
+                            $lq.on(document,"end",function documentEnd(ed){
+                                $lq.off(document,"move",documentMove);
+                                $lq.off(document,"end",documentEnd);
+                                $audio[0].currentTime =scale*$audio[0].duration;
+                                //console.log( $audio[0].currentTime,scale*$audio[0].duration);
+                                progress();
+                                clearInterval(timer);
+                                timer=setInterval(progress,1000);
+                            });
+                        }]});*/
+                    };
+                    function loadMusic(){
+                        var id=musicInfo.active;
+                        onoff=true;
+                        //var once=true;
+                        over=false;
+                        musicList.show();
+                        musicDetail.show();
+                        if(player.pre ==undefined){
+                            player.pre=musicInfo.index;
+                            reload();
+                        }else{
+                            console.log(player.pre,musicInfo.index);
+                            if(player.pre==musicInfo.index){
+                                console.log("单曲");
+                                reset();
+                            }else{
+                                reload();
+                            }
+                        };
+
+                        function reload(){
+                            $audio[0].src=musicInfo.info[id].src;
+                        }
+                        function reset(){
+                            console.log("reset");
+                            playerStatus();
+                        }
+
+                    };
+                    function play(){
+                        if(over){
+                            loadMusic();
+                            return;
+                        }
+                        onoff=false;
+                        $lq.addClass($foots[0],"move");
+                        icon.setStyle("backgroundImage","url("+url.musicImg+"musicon.gif)");
+                        $lq.setStyle($foots[2],"backgroundImage","url("+url.musicImg+"list_audioPause.png)");
+                        $lq.setStyle($playerBtn[0],"backgroundImage","url("+url.musicImg+"details_pause.png)");
+                        $audio[0].play();
+                        progress();
+                        clearInterval(timer);
+                        timer=setInterval(progress,1000);
+                    };
+                    function pause(){
+                        onoff=true;
+                        $lq.removeClass($foots[0],"move");
+                        icon.setStyle("backgroundImage","url("+url.musicImg+"musicoff.gif)");
+                        $lq.setStyle($foots[2],"backgroundImage","url("+url.musicImg+"list_audioPlay.png)");
+                        $lq.setStyle($playerBtn[0],"backgroundImage","url("+url.musicImg+"details_play.png)");
+                        $audio[0].pause();
+                        clearInterval(timer);
+                    };
+                    function progress(){
+                        $time[0].innerHTML=formatTime($audio[0].currentTime);
+                        scale=$audio[0].currentTime/$audio[0].duration;
+                        //console.log("progress",scale,barW,barW*scale);
+                        if(scale>=1){
+                            console.log("播放结束");
+                            clearInterval(timer);
+                            $progress.run(function(el){
+                                //el.className=="detail_proUp"?   el.style.width=0:el.style.left=0;
+                                el.className=="detail_proUp"?   el.style.width=0:$lq.transform(el,{translate:{translateX:0}},true);
+                            });
+                            //单曲不循环情况下，要点击播放按钮才会清理0，所以，要放在播放结束后，直接处理。
+                            $audio[0].currentTime=0;
+                            $time[0].innerHTML=formatTime("00:00");
+                            over=true;
+                            pause();
+                            //无next,play，random为单曲单次播放
+                            next();//顺序循环播放
+                            //play();//单曲循环播放
+                            //random()//随机播放
+                            return;
+                        }
+                        $progress.run(function(el){
+                            //el.className=="detail_proUp"?  el.style.width=scale*100+"%": el.style.left=scale*100+"%";
+                            el.className=="detail_proUp"?  el.style.width=scale*100+"%": $lq.transform(el,{translate:{translateX:barW*scale}},true);
+                        });
+                        musicDetail.scrollLyric($audio[0].currentTime);
+                    };
+                    function prev(){
+                        var index=musicInfo.index;
+                        player.pre=index;
+                        index--;
+                        index=index<0?$musicLis.length-1:index;
+                        musicList.active(index);
+                        loadMusic();
+                    };
+                    function next(){
+                        var index=musicInfo.index;
+                        player.pre=index;
+                        index++;
+                        index=index>$musicLis.length-1?0:index;
+                        musicList.active(index);
+                        loadMusic();
+                    };
+                    function random(){
+                        var index=musicInfo.index;
+                        player.pre=index;
+                        index=$lq.random(0,$musicLis.length-1);
+                        musicList.active(index);
+                        loadMusic();
+                    }
+                    function formatTime(time){
+                        var time=parseInt(time);
+                        var minute=Math.floor(time%3600/60);
+                        var second=Math.floor(time%60);
+                        return toZero(minute)+":"+toZero(second);
+                    };
+                    function toZero(num){
+                        return  num<10?'0'+num:''+num;
+                    };
+                    function playerStatus(){
+                        onoff?play():pause();
+                    }
+                    return {
+                        init:init,
+                        load:loadMusic,
+                        playerStatus:playerStatus,
+                        update:function(){
+                            barW=$lq.getStyle($progress[0].parentNode,"width");
+                        }
+                    };
+                }();
+
+                function init(){
+                    //console.log(play[0].children,$lq(play[0].children))
+                    //deviceInfo=adaptor();
+                    //listInfo=getListInfo();
+                    musicList.init();
+                    musicDetail.init();
+                    player.init();
+                    bundle();
+                }
+                function bundle(){
+
+                }
+                init();
+                function show(){
+                    disc.setStyle("className","discMovie");
+                    play.setStyle("className","playMovie");
+                }
+                function hidden(){
+                    disc.setStyle("className","discOff");
+                    play.setStyle("className","playOff");
+                }
+                return{
+                    iner:show,
+                    out:hidden,
+                    update:function(){
+                        contentH=view.content.h;
+                        dragList.update();
+                        progressDrag.update();
+                        player.update();
+                        var visible=$lq.getStyle($musicMenu[0],"visibility");
+                        console.log("...........................",visible);
+                        if(visible=="hidden"){
+                            musicDetail.slideUp();
+                        }else if(visible=="visible"){
+                            musicDetail.slideDown();
+                        }
+
+                    }
+                } ;
+            }();
+            //模块调度
+            var page={
+                0:{
+                    iner:library.iner,
+                    out:library.out,
+                    ing:false
+                },
+                1:{
+                    iner:ball.iner,
+                    out:ball.out
+                },
+                2:{
+                    iner:musicPlay.iner,
+                    out:musicPlay.out
+                }
+
+            };
+
+        });
+    </script>
+</head>
+<body>
+    <section id="mainContext">
+        <header id="head">
+            <div class="displayArea clearfix">
+                <section id="icon">
+                    <ul class="clearfix">
+                        <li>
+                            <a href="javascript:;"></a>
+                            <em id="typeModel">
+                                <a data-type="top" href="javascript:;">垂直</a>
+                                <a data-type="left" href="javascript:;">水平</a>
+                                <a data-type="leftRight"href="javascript:;">3D</a>
+                            </em>
+                        </li>
+                        <li>
+                            <a href="javascript:;"></a>
+                            <em id="QRCode">
+                                <a href="javascript:;">二维码</a>
+                            </em>
+                        </li>
+                        <li>
+                            <a href="javascript:;" id="musicIcon"></a>
+                        </li>
+                    </ul>
+                </section>
+                <nav id="nav">
+                    <ul  class="clearfix">
+                        <li>
+                            <a href="javascript:;">
+                                <span>
+                                    <i class="up">简述板</i>
+                                    <i>简述板</i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">
+                                <span>
+                                    <i class="up">技能球</i>
+                                    <i>技能球</i>
+                                </span>
+
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:;">
+                                <span>
+                                    <i class="up">音乐站</i>
+                                    <i>音乐站</i>
+                                </span>
+
+                            </a>
+                        </li>
+                    </ul>
+                    <em class="arrow"></em>
+                </nav>
+            </div>
+        </header>
+        <div id="content">
+            <div id="wrapContent" class="wrapContent">
+                <ul id="exhibition">
+                    <li id="library">
+                        <div class="displayArea" >
+                            <div class="star starBg"></div>
+                            <div class="star starBg"></div>
+                            <div class="star starBg"></div>
+                            <ul id="bookList" class="star mainStar">
+                                <li>
+                                    <div>
+                                        <h1>JS-库简述</h1>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div>
+                                        <h1>D/B模块</h1>
+                                     </div>
+                                </li>
+                                <li><div>
+                                    <h1>样式模块</h1>
+                                </div></li>
+                                <li><div>
+                                    <h1>Ajax模块</h1>
+                                </div></li>
+                                <li><div>
+                                    <h1>事件模块</h1>
+                                </div></li>
+                                <li><div>
+                                    <h1>动画模块</h1>
+                                </div></li>
+                                <li><div>
+                                    <h1>组件模块</h1>
+                                </div></li>
+                            </ul>
+                            <div id="description">
+                                <section>
+                                    <!--简述-->
+                                    <div class="title">
+                                        <h3><span>J</span><span>S</span><span>库</span><span>简</span><span>述</span></h3>
+                                    </div>
+                                    <div class="describe">
+                                        <p>本个人站点，是基于自建的一个JS功能库搭建而成的自适应网站。前端代码采用MVC设计模式,view层HTML+CSS3来展示，controller层controller.js来处理用户交互和状态变化。</p>
+                                        <p>model层$lq.js向controller层提供了具有兼容性功能的模块：与后台数据交互，获取view层元素，处理事件操作，元素动画操作，元素样式操作，通用组件等功能模块。</p>
+                                    </div>
+                                </section>
+                                <section>
+                                    <!--dom-->
+                                    <div class="title">
+                                        <h3><span>D</span><span>O</span><span>M</span><span>与</span><span>B</span><span>O</span><span>M</span></h3>
+                                    </div>
+                                    <div class="describe">
+                                        <p>对获取view层的DOM元素方法进行了封装，对于不支持querySelectorAll方法的浏览器，进行了兼容处理，能够获取CSS2样式格式的对应元素。</p>
+                                        <p>对浏览器对象BOM，主要应用在于navigator对象的用户代理，该模块提供的方法能够判断当前浏览器版本以及所使用的设备（移动，台式，平板）。</p>
+                                    </div>
+                                </section>
+                                <section>
+                                    <!--Bom-->
+                                    <div class="title">
+                                        <h3><span>样</span><span>式</span><span>模</span><span>块</span></h3>
+                                    </div>
+                                    <div class="describe">
+                                        <p>对获取浏览器计算后的样式值进行兼容统一，设置元素style样式提供统一方法。对于CSS3中的transform属性的获取和设置进行了封装。</p>
+                                        <p>提供了对样式表的操作，增加，删除，添加样式名以及样式规则条目。</p>
+                                    </div>
+                                </section>
+                                <section>
+                                    <!--AJAX-->
+                                    <div class="title">
+                                        <h3><span>A</span><span>j</span><span>A</span><span>X</span><span>模</span><span>块</span></h3>
+                                    </div>
+                                    <div class="describe">
+                                        <p>对XMLHttpRequest进行兼容处理，提供有异步同步，get/post，请求回调，超时中断等功能选项的Ajax方法。</p>
+                                        <p>对请求获取的数据进行json处理，使得字符串对象变为json格式对象，也可以把json对象变为字符串。除此之外还提供了一个跨越请求解决方案。</p>
+                                    </div>
+                                </section>
+                                <section>
+                                    <!--事件模块-->
+                                    <div class="title">
+                                        <h3><span>事</span><span>件</span><span>模</span><span>块</span></h3>
+                                    </div>
+                                    <div class="describe">
+                                        <p>对各浏览器事件操作进行兼容处理：提供统一的添加、删除事件，一次性事件，事件阻止冒泡，阻止默认事件，事件对象、名称兼容等功能。</p>
+                                        <p>提供了自定义事件功能：对于元素和节点或其他对象，可以进行自定义事件监听，并在需要场合来触发该事件。</p>
+                                    </div>
+                                </section>
+                                <section>
+                                    <!--动画模块-->
+                                    <div class="title">
+                                        <h3><span>动</span><span>画</span><span>模</span><span>块</span></h3>
+                                    </div>
+                                    <div class="describe">
+                                        <p>对于支持CSS3的浏览器，提供了transition动画方法接口，可以使用json对象配置参数来直接实现所需动画。</p>
+                                        <p>对于不支持CSS3的浏览器，或者需要精确控制动画过程的情况，提供了具有兼容性的requestAnimationFrame帧动画方法接口，来实现过渡动画。</p>
+                                    </div>
+                                </section>
+                                <section>
+                                    <!--组件模块-->
+                                    <div class="title">
+                                        <h3><span>组</span><span>件</span><span>模</span><span>块</span></h3>
+                                    </div>
+                                    <div class="describe">
+                                        <p>对常用功能进行对象封装：拖拽组件，点击，滚动条，窗口，进度条，提示框等基础性组件。</p>
+                                        <p>后续根据需要还将封装些综合性组件例如：日历组件，播放器组件，表单表格组件，焦点图等组件。</p>
+                                    </div>
+                                </section>
+
+                            </div>
+                        </div>
+                        <div id="bookListMin" class="minOff">
+                            <ul  class="clearfix">
+                                <li data-index="0">
+                                    <a href="javascript:;">
+                                        <h1>JS-库简述</h1>
+                                    </a>
+                                </li>
+                                <li data-index="1">
+                                    <a href="javascript:;">
+                                        <h1>D/B模块</h1>
+                                    </a>
+                                </li>
+                                <li data-index="2">
+                                    <a href="javascript:;">
+                                        <h1>样式模块</h1>
+                                    </a>
+                                </li>
+                                <li data-index="3">
+                                    <a href="javascript:;">
+                                        <h1>Ajax模块</h1>
+                                    </a>
+                                </li>
+                                <li data-index="4">
+                                    <a href="javascript:;">
+                                        <h1>事件模块</h1>
+                                    </a>
+                                </li>
+                                <li data-index="5">
+                                    <a href="javascript:;">
+                                        <h1>动画模块</h1>
+                                    </a>
+                                </li>
+                                <li data-index="6">
+                                    <a href="javascript:;">
+                                        <h1>组件模块</h1>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li id="energyBall">
+                        <div class="displayArea">
+                            <section id="catalog">
+                                <div class="circleBase">
+                                    <div class="circleCenter">
+                                        <p>前端开发</p>
+                                        <p>技能图谱</p>
+                                        <div class="waveBall">
+                                       <!--     <i class="waveMovieOne"></i>-->
+                                            <i class="waveMovieTwo"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="circleSubline"></div>
+                                <div class="circleOutLine">
+                                    <i class="circleLine"></i>
+                                    <i class="circleLine"></i>
+                                    <i class="circleLine"></i>
+                                    <i class="circleLine"></i>
+                                    <i class="circleLine"></i>
+                                    <i class="circleLine"></i>
+                                </div>
+                                <svg id="ballSvg" xmlns="http://www.w3.org/2000/svg"  width="100%" height="100%" ></svg>
+                            </section>
+                        </div>
+                        <div id="ballMin" class="minOff">
+                            <ul></ul>
+                        </div>
+                    </li>
+                    <li id="audioPlay">
+                        <div class="displayArea">
+                            <section id="musicDisc" >
+                                <div class="needle"></div>
+                            </section>
+                            <section id="musicPlay">
+                                <div class="wrap_music" id="wrap_music">
+                         <!--           <div class="maskList"></div>-->
+                                    <div class="musicMenu">
+                                        <div class="musicTitle">
+                                            <span class="titleText">歌曲目录</span>
+                                            <span class="titleIcon"></span>
+                                        </div>
+                                        <div class="musicList">
+                                            <ul></ul>
+                                        </div>
+                                        <footer class="musicFoot">
+                                            <img src="images/music/cd.png" alt="" class="musicFootIcon">
+                                            <div class="musicFootText">
+                                                <h3>歌曲名</h3>
+                                                <p>歌手</p>
+                                            </div>
+                                            <div class="musicFootBtn"></div>
+                                        </footer>
+                                    </div>
+                                    <div class="musicDetail">
+                                        <div class="detail_title">
+                                            <h3 class="detail_name">momo</h3>
+                                            <span class="detail_tip"></span>
+                                        </div>
+                                        <div class="detail_lyric">
+                                            <ul class="lyricBox"></ul>
+                                        </div>
+                                        <div class="detail_audio">
+                                            <div class="audio_operate">
+                                                <div class="detail_progress">
+                                                    <div class="detail_proUp"></div>
+                                                    <div class="detail_proBtn"></div>
+                                                </div>
+                                                <div id="detailsNowTime" class="details_nowTime">00:00</div>
+                                                <div id="detailsAllTime" class="details_allTime">00:00</div>
+                                                <div id="detailsPlay" class="details_play"></div>
+                                                <div id="detailsPrev" class="details_prev"></div>
+                                                <div id="detailsNext" class="details_next"></div>
+                                            </div>
+                                        </div>
+                                        <ul class="detail_btn">
+                                            <li></li>
+                                            <li class="active"></li>
+                                        </ul>
+                                    </div>
+                                    <div class="musicLoading">
+                                        <div class="musicLoadingIcon"></div>
+                                    </div>
+                                </div>
+                                <audio id="audioPlayer"></audio>
+                            </section>
+                        </div>
+                    </li>
+                </ul>
+                <ul id="exhibitionBg" >
+                    <li>
+                        <div id="waveWrap">
+                            <div id="mountain">
+                                <i style="z-index: 2;" class="mountainImg"></i>
+                                <i style="z-index: 3;" class="mountainImg"></i>
+                                <i style="z-index: 5;" class="mountainImg"></i>
+                                <i class="star"></i>
+                                <i class="star"></i>
+
+
+                   <!--             <img src="images/library/mountainOne.png" style="z-index: 2;"/>
+                                <img src="images/library/mountainTwo.png" style="z-index: 3;"/>
+                                <img src="images/library/mountainThree.png" style="z-index: 5;"/>
+                                <img src="images/library/starOne.png" class="star"/>
+                                <img src="images/library/starOne.png" class="star"/>-->
+
+                            </div>
+                            <div id="sea">
+                                <img src="images/library/waveOne.png" class="langs"/>
+                                <img src="images/library/waveTwo.png" class="langs"/>
+                                <img src="images/library/waveThree.png" class="langs"/>
+                                <img src="images/library/boatOne.png"/>
+                                <img src="images/library/boatTwo.png"/>
+                                <img src="images/library/boatThree.png"/>
+                                <img src="images/library/boatFour.png"/>
+                            </div>
+
+                        </div>
+                    </li>
+                    <li></li>
+                    <li id="musicBg">
+                      <!--  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" height="100%" width="100%" id="musicSvg">
+                            <defs>
+                                <filter id="blur" x="0" y="0">
+                                    <feGaussianBlur stdDeviation="10" />
+                                </filter>
+                            </defs>
+                            <image xlink:href="images/music/bg/1.jpg" x="0" y="0" height="100%" width="100%" filter="url(#blur)" />
+                        </svg>-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <section id="loading">
+        <div id="loadingPart1">
+            <i class="circle1"></i>
+            <i class="circle2"></i>
+            <i class="circle3"></i>
+            <i class="circle4"></i>
+        </div>
+        <div id="loadingPart2">
+            <i class="circle1"></i>
+            <i class="circle2"></i>
+            <i class="circle3"></i>
+            <i class="circle4"></i>
+        </div>
+        <div id="loadingPart3">
+            <i>
+                <p class="progress">0%</p>
+                <p class="loadingText">开始加载</p>
+            </i>
+        </div>
+        <div id="loadingBg"></div>
+    </section>
+    <section id="windowInfo">
+        <div id="winQRCode" class="winCon"></div>
+        <div id="windowBg"></div>
+    </section>
+    <section id="noSupport">
+        <div class="supportInfo">
+            <ul>
+                <li class="supportIcon"></li>
+                <li class="supportText"><p>浏览器过旧，请使用较新版本的chrome或firefox，360，2345等浏览器</p></li>
+            </ul>
+        </div>
+    </section>
+</body>
+</html>

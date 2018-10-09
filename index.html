@@ -79,11 +79,11 @@
             };
             //请求路径
             var url=function(){
-                var images="./images/";
-                var json="./json/";
+                var images="/images/";
+                var json="/json/";
                 var music=json+"music.json";
                 var ball=json+"ball.json"
-                var musicImg="images/music/"
+                var musicImg="/images/music/"
                 return {
                     images:images,
                     json:json,
@@ -108,7 +108,7 @@
                 $lq.forEeach(dataset,function(i,url){
                     $lq.ajax({
                         async:false,
-                        method:"post",
+                        method:"get",
                         url:url,
                         success:function(json){
                             var data=$lq.parseJson(json);
@@ -1054,12 +1054,13 @@
                             },
                             ing:function(e){
                                 scale=progressDrag.now().x/barW;
-                                console.log("ing",scale);
+                                console.log("ing",scale,onoff);
                             },
                             end:function(e){
                                 $audio[0].currentTime =scale*$audio[0].duration;
                                 console.log("end",scale);
                                 //console.log( $audio[0].currentTime,scale*$audio[0].duration);
+                                onoff=true;
                                 progress();
                                 clearInterval(timer);
                                 timer=setInterval(progress,1000);
@@ -1211,6 +1212,7 @@
                         return  num<10?'0'+num:''+num;
                     };
                     function playerStatus(){
+                        console.log("playerStatus-->",onoff);
                         onoff?play():pause();
                     }
                     return {

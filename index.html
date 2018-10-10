@@ -10,7 +10,7 @@
     <!--[if lt IE 9]>
     <script src="js/html5.js"></script><![endif]-->
     <script src="js/$lq1.1.js"></script>
-    <script src="js/data.js"></script>
+<!--    <script src="js/data.js"></script>-->
     <style>
 
     </style>
@@ -79,11 +79,11 @@
             };
             //请求路径
             var url=function(){
-                var images="/images/";
-                var json="/json/";
+                var images="./images/";
+                var json="./json/";
                 var music=json+"music.json";
                 var ball=json+"ball.json"
-                var musicImg="/images/music/"
+                var musicImg="./images/music/"
                 return {
                     images:images,
                     json:json,
@@ -1355,39 +1355,39 @@
                             <ul id="bookList" class="star mainStar">
                                 <li>
                                     <div>
-                                        <h1>JS-库简述</h1>
+                                        <h1>站点介绍</h1>
                                     </div>
                                 </li>
-                                <li>
+                                <li style="display:none">
                                     <div>
-                                        <h1>D/B模块</h1>
+                                        <h1>物资管理</h1>
                                      </div>
                                 </li>
-                                <li><div>
-                                    <h1>样式模块</h1>
+                                <li style="display:none"><div>
+                                        <h1>采购管理</h1>
                                 </div></li>
                                 <li><div>
-                                    <h1>Ajax模块</h1>
+                                    <h1>物资管理</h1>
                                 </div></li>
-                                <li><div>
+                                <li style="display:none"><div>
                                     <h1>事件模块</h1>
                                 </div></li>
-                                <li><div>
+                                <li style="display:none"><div>
                                     <h1>动画模块</h1>
                                 </div></li>
                                 <li><div>
-                                    <h1>组件模块</h1>
+                                    <h1>采购管理</h1>
                                 </div></li>
                             </ul>
                             <div id="description">
                                 <section>
                                     <!--简述-->
                                     <div class="title">
-                                        <h3><span>J</span><span>S</span><span>库</span><span>简</span><span>述</span></h3>
+                                        <h3><span>站</span><span>点</span><span>介</span><span>绍</span></h3>
                                     </div>
                                     <div class="describe">
-                                        <p>本个人站点，是基于自建的一个JS功能库搭建而成的自适应网站。前端代码采用MVC设计模式,view层HTML+CSS3来展示，controller层controller.js来处理用户交互和状态变化。</p>
-                                        <p>model层$lq.js向controller层提供了具有兼容性功能的模块：与后台数据交互，获取view层元素，处理事件操作，元素动画操作，元素样式操作，通用组件等功能模块。</p>
+                                        <p>本个人站点，是基于自建的一个JS功能库搭建而成的自适应网站。纯js + css3 + html实现，目的是深入JS编程。</p>
+                                        <p>自建库，是个类Jquery的Dom处理功能库，页面所有功能都基于此，页面涉及了CSS3动画，SVG,音频，单页应用，自适应等。</p>
                                     </div>
                                 </section>
                                 <section>
@@ -1413,12 +1413,13 @@
                                 <section>
                                     <!--AJAX-->
                                     <div class="title">
-                                        <h3><span>A</span><span>j</span><span>A</span><span>X</span><span>模</span><span>块</span></h3>
+                                        <h3><span>物</span><span>资</span><span>管</span><span>理</span></h3>
                                     </div>
                                     <div class="describe">
-                                        <p>对XMLHttpRequest进行兼容处理，提供有异步同步，get/post，请求回调，超时中断等功能选项的Ajax方法。</p>
-                                        <p>对请求获取的数据进行json处理，使得字符串对象变为json格式对象，也可以把json对象变为字符串。除此之外还提供了一个跨越请求解决方案。</p>
+                                        <p>企业物资管理流程，前端采用Jquery + Bootstrap,后端使用了Nodejs + Mongodb。</p>
+                                        <p>图表可视化的方式，管理企业物资资金流向，管理员工信息，事务提醒 等功能。</p>
                                     </div>
+
                                 </section>
                                 <section>
                                     <!--事件模块-->
@@ -1443,11 +1444,11 @@
                                 <section>
                                     <!--组件模块-->
                                     <div class="title">
-                                        <h3><span>组</span><span>件</span><span>模</span><span>块</span></h3>
+                                        <h3><span>采</span><span>购</span><span>管</span><span>理</span></h3>
                                     </div>
                                     <div class="describe">
-                                        <p>对常用功能进行对象封装：拖拽组件，点击，滚动条，窗口，进度条，提示框等基础性组件。</p>
-                                        <p>后续根据需要还将封装些综合性组件例如：日历组件，播放器组件，表单表格组件，焦点图等组件。</p>
+                                        <p>企业采购管理流程，前端采用Vue + Element,后端使用了Nodejs + Mongodb。</p>
+                                        <p>完整的企业采购步骤：商品列表价格筛选，购物车，地址管理，订单生成，订单提交支付。</p>
                                     </div>
                                 </section>
 
@@ -1457,37 +1458,37 @@
                             <ul  class="clearfix">
                                 <li data-index="0">
                                     <a href="javascript:;">
-                                        <h1>JS-库简述</h1>
+                                        <h1>站点介绍</h1>
                                     </a>
                                 </li>
-                                <li data-index="1">
+                                <li data-index="1" style="display:none">
                                     <a href="javascript:;">
                                         <h1>D/B模块</h1>
                                     </a>
                                 </li>
-                                <li data-index="2">
+                                <li data-index="2" style="display:none">
                                     <a href="javascript:;">
                                         <h1>样式模块</h1>
                                     </a>
                                 </li>
                                 <li data-index="3">
                                     <a href="javascript:;">
-                                        <h1>Ajax模块</h1>
+                                        <h1>物资管理</h1>
                                     </a>
                                 </li>
-                                <li data-index="4">
+                                <li data-index="4" style="display:none">
                                     <a href="javascript:;">
                                         <h1>事件模块</h1>
                                     </a>
                                 </li>
-                                <li data-index="5">
+                                <li data-index="5" style="display:none">
                                     <a href="javascript:;">
                                         <h1>动画模块</h1>
                                     </a>
                                 </li>
                                 <li data-index="6">
                                     <a href="javascript:;">
-                                        <h1>组件模块</h1>
+                                        <h1>采购管理</h1>
                                     </a>
                                 </li>
                             </ul>

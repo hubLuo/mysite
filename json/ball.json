@@ -67,7 +67,7 @@
     "child_data2":[
         {
           "circle":{"size":10,"x":300,"y":420},
-          "text":{"cont":"VUE.js","x":315,"y":415,"rotate":-40,"progress":30}
+          "text":{"cont":"VUE.js","x":315,"y":415,"rotate":-40,"progress":50}
         },
         {
           "circle":{"size":10,"x":270,"y":460},
@@ -81,7 +81,7 @@
         },
         {
           "circle":{"size":10,"x":120,"y":455},
-          "text":{"cont":"Bootstrap","x":48,"y":502,"rotate":-30,"progress":30}
+          "text":{"cont":"Bootstrap","x":48,"y":502,"rotate":-30,"progress":70}
         }
     ],
     "child_data3":[
